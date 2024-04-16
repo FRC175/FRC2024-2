@@ -68,12 +68,12 @@ public final class Constants {
     public static final class LiftConstants {
         public static final int LEFT = 16;
         public static final int RIGHT = 15; 
-        public static final double STARTING_POSITION_LEFT = 1-0.54;
-        public static final double STARTING_POSITION_RIGHT = 0.34;
+        public static final double STARTING_POSITION_LEFT = 1-0.56;
+        public static final double STARTING_POSITION_RIGHT = 0.77;
         public static final double MID_POSITION_RIGHT = 3.5;
         public static final double MID_POSITION_LEFT = 3.5;
-        public static final double FINAL_POSITION_LEFT = 7.14;
-        public static final double FINAL_POSITION_RIGHT = 7.14;
+        public static final double FINAL_POSITION_LEFT = 6.86;
+        public static final double FINAL_POSITION_RIGHT = 7.13;
     }
 
     public static final class ArmConstants {
@@ -87,9 +87,11 @@ public final class Constants {
         PODIUM(0.7955),
         INTAKE(0.8975),
         AMP(0.630),
+        PASSING(0.785),
         START_NOTE(0.8),
         TRAP(0.8650),
         WHATEVER(0.82),
+        
         MARRR(0.79);
 
         private final double position;
@@ -111,7 +113,7 @@ public final class Constants {
     }
     public static final class LimelightConstants {
 
-        public static final double mountHeight = 14.128;
+        public static final double mountHeight = 14.628;
         public static final double mountAngle = 36.10;
         public static final double[] tagHeights = {48.125, 48.125, 51.875, 51.875, 48.125, 48.125, 48.125, 48.125, 51.875, 51.875, 47.5, 47.5, 47.5, 47.5, 47.5, 47.5,};
 

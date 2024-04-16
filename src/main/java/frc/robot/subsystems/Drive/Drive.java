@@ -8,6 +8,7 @@ import com.ctre.phoenix6.hardware.Pigeon2;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
@@ -38,11 +39,13 @@ public final class Drive implements Subsystem {
         // leftMaster = new CANSparkMax(DriveConstants.LEFT_MASTER_PORT, CANSparkMaxLowLevel.MotorType.kBrushless);
         frontRight = new SwerveModule(DriveConstants.frontRightDrive, DriveConstants.frontRightRot, DriveConstants.frontRightEncoder, DriveConstants.frontRightTurnAngle, DriveConstants.frontRightBaseAngle, true);
         frontLeft = new SwerveModule(DriveConstants.frontLeftDrive, DriveConstants.frontLeftRot, DriveConstants.frontLeftEncoder, DriveConstants.frontLeftTurnAngle, DriveConstants.frontLeftBaseAngle, false);
-        backRight = new SwerveModule(DriveConstants.backRightDrive, DriveConstants.backRightRot, DriveConstants.backRightEncoder, DriveConstants.backRightTurnAngle, DriveConstants.backRightBaseAngle, true);
-        backLeft = new SwerveModule(DriveConstants.backLeftDrive, DriveConstants.backLeftRot, DriveConstants.backLeftEncoder, DriveConstants.backLeftTurnAngle, DriveConstants.backLeftBaseAngle, false);
+        backRight = new SwerveModule(DriveConstants.backRightDrive, DriveConstants.backRightRot, DriveConstants.backRightEncoder, DriveConstants.backRightTurnAngle, DriveConstants.backRightBaseAngle, false);
+        backLeft = new SwerveModule(DriveConstants.backLeftDrive, DriveConstants.backLeftRot, DriveConstants.backLeftEncoder, DriveConstants.backLeftTurnAngle, DriveConstants.backLeftBaseAngle, true);
         configureSparks();
 
         pigeon = new Pigeon2(DriveConstants.PIDGEON);
+
+        // SwerveModule test = new SwerveModule
 
         pose = new Pose2d(0, 0, new Rotation2d());
 
@@ -56,7 +59,7 @@ public final class Drive implements Subsystem {
 
         kinematics = new SwerveDriveKinematics(frontLeftLocation, frontRightLocation, backLeftLocation, backRightLocation);
         odometry = new SwerveDriveOdometry(
-            kinematics, pigeon.getRotation2d(),
+            kinematics, new Rotation2d(Math.toRadians(getOdometryAngle())),
             new SwerveModulePosition[] {
               new SwerveModulePosition(0, new Rotation2d()),
               new SwerveModulePosition(0, new Rotation2d()),
@@ -97,6 +100,10 @@ public final class Drive implements Subsystem {
         
     }
 
+    public Rotation2d getGyro() {
+        return new Rotation2d(Math.toRadians(getOdometryAngle()));
+    }
+
     /**
      * Sets the drive motors to a certain percent output (demand) using open loop control (no sensors in feedback loop).
      *
@@ -115,43 +122,47 @@ public final class Drive implements Subsystem {
         backLeft.turnOpenLoop(turn);
     }
 
-    public void postEncoders() {
-        // SmartDashboard.putNumber("FrontRightD", frontRight.getAngle());
-        // SmartDashboard.putNumber("FrontLeftD", frontLeft.getAngle());
-        // SmartDashboard.putNumber("BackRightD", backRight.getAngle());
-        // SmartDashboard.putNumber("BackLeftD", backLeft.getAngle());
-
-        // SmartDashboard.putNumber("FrontRightP", frontRight.getEncoder());
-        // SmartDashboard.putNumber("FrontLeftP", frontLeft.getEncoder());
-        // SmartDashboard.putNumber("BackRightP", backRight.getEncoder());
-        // SmartDashboard.putNumber("BackLeftP", backLeft.getEncoder());
-    }
-
     @Override
     public void periodic() {
         // Get the rotation of the robot from the gyro.
         var gyroAngle = pigeon.getRotation2d();
 
+        // System.out.println(gyroAngle.getDegrees());
+
         // Update the pose
-        pose = odometry.update(gyroAngle,
+        pose = odometry.update(new Rotation2d(Math.toRadians(getOdometryAngle())),
         new SwerveModulePosition[] {
-            new SwerveModulePosition(frontLeft.getDriveDistance(), new Rotation2d(frontLeft.getOdometryAngle())), new SwerveModulePosition(frontRight.getDriveDistance(), new Rotation2d(frontRight.getOdometryAngle())),
-            new SwerveModulePosition(backLeft.getDriveDistance(), new Rotation2d(backLeft.getOdometryAngle())), new SwerveModulePosition(backRight.getDriveDistance(), new Rotation2d(backRight.getOdometryAngle()))
+            new SwerveModulePosition(frontLeft.getDriveDistance(), new Rotation2d(Math.toRadians(frontLeft.getOdometryAngle()))), new SwerveModulePosition(frontRight.getDriveDistance(), new Rotation2d(Math.toRadians(frontRight.getOdometryAngle()))),
+            new SwerveModulePosition(backLeft.getDriveDistance(), new Rotation2d(Math.toRadians(backLeft.getOdometryAngle()))), new SwerveModulePosition(backRight.getDriveDistance(), new Rotation2d(Math.toRadians(backRight.getOdometryAngle())))
         });
 
-        System.out.println("FL: " + frontLeft.getDriveDistance() + "\t\t" + frontLeft.isReversed());
-        System.out.println("FR: " + frontRight.getDriveDistance() + "\t\t" + frontRight.isReversed());
-        System.out.println("BL: " + backLeft.getDriveDistance() + "\t\t" + backLeft.isReversed());
-        System.out.println("BR: " + backRight.getDriveDistance() + "\t\t" + backRight.isReversed());
+        // System.out.println("FL: " + frontLeft.getDriveDistance() + "\t\t" + frontLeft.isReversed());
+        // System.out.println("FR: " + frontRight.getDriveDistance() + "\t\t" + frontRight.isReversed());
+        // System.out.println("BL: " + backLeft.getDriveDistance() + "\t\t" + backLeft.isReversed());
+        // System.out.println("BR: " + backRight.getDriveDistance() + "\t\t" + backRight.isReversed());
 
         SmartDashboard.putNumber("X Position: ", getPose().getX());
         SmartDashboard.putNumber("Y Position: ", getPose().getY());
+        SmartDashboard.putNumber("Front Left Raw", frontLeft.getOdometryAngle());
+
 
         // SmartDashboard.putNumber("Distance: ", frontLeft.getDriveDistance());
 
         postYaw();
 
     }
+
+    public void resetPose(Pose2d pose) {
+        odometry.resetPosition(new Rotation2d(Math.toRadians(getOdometryAngle())),
+            new SwerveModulePosition[] {
+            new SwerveModulePosition(frontLeft.getDriveDistance(), new Rotation2d(Math.toRadians(frontLeft.getOdometryAngle()))), new SwerveModulePosition(frontRight.getDriveDistance(), new Rotation2d(Math.toRadians(frontRight.getOdometryAngle()))),
+            new SwerveModulePosition(backLeft.getDriveDistance(), new Rotation2d(Math.toRadians(backLeft.getOdometryAngle()))), new SwerveModulePosition(backRight.getDriveDistance(), new Rotation2d(Math.toRadians(backRight.getOdometryAngle())))
+        }, pose);
+    }
+
+    // public ChassisSpeeds[] getRobotRelativeSpeeds() {
+    //     return new ChassisSpeeds[] {new ChassisSpeeds()}
+    // }
 
     public void swerve(double joyX, double joyY, double twist, double gyroAngle) {
         Vector transversal = new Vector(joyX, joyY * -1);
@@ -241,6 +252,14 @@ public final class Drive implements Subsystem {
 
     public double getYaw() {
         return ((pigeon.getYaw().getValue() % 360) + 360) % 360;
+    }
+
+    public double getOdometryAngle() {
+        if (getYaw() > 180) {
+            return -(360-getYaw());
+        } else {
+            return getYaw();
+        }
     }
 
     public void resetGyro(double val) {

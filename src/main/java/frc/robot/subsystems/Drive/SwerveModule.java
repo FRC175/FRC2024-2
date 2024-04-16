@@ -46,6 +46,7 @@ public class SwerveModule {
         this.goalAngle = 0;
         this.basePosition = basePosition;
         this.reversed = false;
+        this.reverseDistance = false;
 
         this.driveEncoder.setPosition(0);
     }
@@ -173,7 +174,8 @@ public class SwerveModule {
     }
 
     public double getDriveDistance() {
-        return (getDriveEncoder() / 6.75) * 0.319;
+        // return ((!reverseDistance && reversed) || (!reversed && reverseDistance)) ? (getDriveEncoder() / 6.75) * 0.319 : -1 * (getDriveEncoder() / 6.75) * 0.319;
+        return getDriveEncoder() / 6.75 * 0.319;
     }
 
     public double getAngle() {

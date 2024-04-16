@@ -40,11 +40,14 @@ public class pickup extends Command {
   @Override
   public void execute() {
     if (!auto || auto) {
-      if (initial) intake.setOpenLoop(0.8);
+      if (initial) intake.setOpenLoop(0.6); // 7
       if (initial) if (intake.isNoteHeld()) {initial = false; phase2 = true;}
-      if (phase2) intake.setOpenLoop(0.4);
+      if (phase2) intake.setOpenLoop(0.3); // 4
       if (phase2) if (intake.isNotePresent()) phase2 = false;
-      if (!initial && !phase2) intake.setOpenLoop(-0.25);
+      if (!initial && !phase2) intake.setOpenLoop(-0.12); // -25
+      // if (initial) intake.setOpenLooop(0.6);
+      // if (initial) if (intake.isNotePresent()) initial = false;
+
     } else {
       intake.setOpenLoop(0.5);
     }
@@ -60,8 +63,8 @@ public class pickup extends Command {
 
   @Override
   public boolean isFinished() {
-    System.out.println(Timer.getFPGATimestamp() - startTime);
-    System.out.println(goalTime);
+    // System.out.println(Timer.getFPGATimestamp() - startTime);
+    // System.out.println(goalTime);
     if (!auto) return !initial && !phase2 && !intake.isNotePresent();
     else return (!initial && !phase2 && !intake.isNotePresent()) || (Timer.getFPGATimestamp() - startTime > goalTime);
   }

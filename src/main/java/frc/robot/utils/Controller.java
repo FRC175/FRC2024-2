@@ -31,7 +31,7 @@ public class Controller {
 
     public boolean get4() {
         if (isJoystick) return new JoystickButton(joy, 4).getAsBoolean();
-        else return false;
+        else return controller.getYButton();
     }
 
     public boolean get6() {
@@ -41,7 +41,7 @@ public class Controller {
 
     public boolean get2() {
         if (isJoystick) return new JoystickButton(joy, 2).getAsBoolean();
-        else return false;
+        else return controller.getXButton();
     }
 
     public boolean get3() {
@@ -93,7 +93,7 @@ public class Controller {
         if (isJoystick) {
             return joy.getTrigger();
         } else {
-            return controller.getRightBumper();
+            return controller.getRightTriggerAxis() > 0.5;
         }
     }
 }

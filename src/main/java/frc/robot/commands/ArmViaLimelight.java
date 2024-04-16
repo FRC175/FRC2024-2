@@ -19,10 +19,23 @@ public class ArmViaLimelight extends Command {
         
     }
 
+    public double calcAngleDisplacement() {
+        int id = DriverStation.getAlliance().get() == Alliance.Red ? 4 : 7;
+        double angle = limelight.getHorizontalAngle(id);
+        double distance = limelight.getDistance(id);
+        double shift = 4.5;
+        double new_distance = Math.sqrt(Math.pow(distance*Math.sin(Math.toRadians(angle)) + shift, 2) + Math.pow(distance*Math.cos(Math.toRadians(angle)),2));
+        double new_angle = Math.toDegrees(Math.atan2(distance*Math.sin(Math.toRadians(angle)) + shift, distance*Math.cos(Math.toRadians(angle))));
+        double output = 90 - Math.toDegrees(Math.atan2(new_distance * Math.cos(Math.toRadians(new_angle)), new_distance * Math.sin(Math.toRadians(new_angle)) - 8.5));
+        return output;
+    }
+
     @Override
     public void execute() {
         double output = 0;
-        double x = DriverStation.getAlliance().get() == Alliance.Red ? limelight.getDistance(4) : limelight.getDistance(7);
+        double d = DriverStation.getAlliance().get() == Alliance.Red ? limelight.getDistance(4) : limelight.getDistance(7);
+        double x = d/Math.cos(Math.toRadians(calcAngleDisplacement()));
+        // double x = limelight.getDistanceToCurrentAprilTag();
         //output = 0.894561 - 0.00275256*x + 0.0000153065*x*x;
         // output = 0.894561 - 0.00275256*x + 0.0000153065*x*x;
         if (regression == 0) {

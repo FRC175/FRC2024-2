@@ -35,10 +35,15 @@ import frc.robot.commands.Climb;
 import frc.robot.commands.DeployArm;
 import frc.robot.commands.SetArmPosition;
 import frc.robot.commands.pickup;
-import frc.robot.commands.AutoModes.DoubleSideShootFromSubwoofer;
-import frc.robot.commands.AutoModes.FarThreeNote;
+import frc.robot.commands.AutoModes.FarDoubleSideNote;
 import frc.robot.commands.AutoModes.MultiNote;
+import frc.robot.commands.AutoModes.MultiNoteLimelight;
+import frc.robot.commands.AutoModes.Pizza;
+import frc.robot.commands.AutoModes.ShootSideNoMotion;
+import frc.robot.commands.AutoModes.Test;
+import frc.robot.commands.AutoModes.AmpNoMotion;
 import frc.robot.commands.AutoModes.AmpSingleNote;
+import frc.robot.commands.AutoModes.CloseDoubleSideNote;
 import frc.robot.commands.AutoModes.DoubleNote;
 import frc.robot.commands.Drive.LimelightToDist;
 import frc.robot.commands.Drive.LockMode;
@@ -104,7 +109,7 @@ public class RobotContainer {
     arm = Arm.getInstance();
     led = LED.getInstance();
 
-    driverController = new Controller(new XboxController(ControllerConstants.OPERATOR_CONTROLLER_PORT));
+    driverController = new Controller(new XboxController(ControllerConstants.DRIVER_CONTROLLER_PORT));
     //operatorController = new Joystick(ControllerConstants.OPERATOR_CONTROLLER_PORT);
     operatorController = new XboxController(ControllerConstants.OPERATOR_CONTROLLER_PORT);
 
@@ -220,7 +225,9 @@ public class RobotContainer {
 
     new Trigger(() -> driverController.get4())
       // .onTrue(new SwerveToAngle(drive, shuffleboard, shuffleboard.limelight.getDistance(shuffleboard.limelight.getTargetIds(shuffleboard.limelight.getJson()))[0] - 0.267, 0.2))
-      .onTrue(new LimelightToDist(drive, limelight))
+      // .onTrue(new LimelightToDist(drive, limelight))
+      // .onFalse(new Swerve(driverController, drive));
+      .whileTrue(new LockSwerve(driverController, drive, Utils.convToSideAngle(29)))
       .onFalse(new Swerve(driverController, drive));
 
     // new Trigger(() -> driverController.get6())
@@ -238,7 +245,7 @@ public class RobotContainer {
     // Operator Controller X Button: Reverse Intake 
     new Trigger(() -> operatorController.getXButton())
       .onTrue(new InstantCommand(() -> {
-        intake.setOpenLoop(-0.75);
+        intake.setOpenLoop(-0.2);
         shooter.shooterSetOpenLoop(-0.75, -0.75);
       }, intake))
       .onFalse(new InstantCommand(() -> {
@@ -300,13 +307,13 @@ public class RobotContainer {
     // }, shooter));
 
     new Trigger(() -> operatorController.getRightTriggerAxis() > 0.5)
-    .onTrue(new RevShooter(shooter, 4000, 4000)) // 51 42
+    .onTrue(new RevShooter(shooter, 3500, 3500)) // 51 42
     .onFalse(new InstantCommand(() -> {
       shooter.shooterSetOpenLoop(0, 0);
     }, shooter));
 
     new Trigger(() -> operatorController.getAButton())
-      .onTrue(new InstantCommand(() -> intake.setOpenLoop(0.7), intake))
+      .onTrue(new InstantCommand(() -> intake.setOpenLoop(0.4), intake))
       .onFalse(new InstantCommand(() -> intake.setOpenLoop(0), intake));
 
     // Operator DPad Down: Set Arm Intake Position
@@ -316,16 +323,16 @@ public class RobotContainer {
         arm.setArmGoalPosition(ArmPosition.INTAKE);
       }));
 
-    new Trigger(() -> Math.abs(operatorController.getRightY()) > 0.5)
-      .whileTrue(new RunCommand(() -> {
-        if (operatorController.getRightY() < 0) {
-            arm.setArmGoalPosition(arm.getArmGoalPosition() - 0.001);
-        } else if (operatorController.getRightY() > 0) {
-          arm.setArmGoalPosition(arm.getArmGoalPosition() + 0.001);
-        }
+    // new Trigger(() -> Math.abs(operatorController.getRightY()) > 0.5)
+    //   .whileTrue(new RunCommand(() -> {
+    //     if (operatorController.getRightY() < 0) {
+    //         arm.setArmGoalPosition(arm.getArmGoalPosition() - 0.001);
+    //     } else if (operatorController.getRightY() > 0) {
+    //       arm.setArmGoalPosition(arm.getArmGoalPosition() + 0.001);
+    //     }
 
         
-      }));
+    //   }));
       // new Trigger(() -> operatorController.getLeftStickButton())
       // .onTrue(new BlinkCycle(1, 5, new LEDColor[] {LEDColor.ORANGE, LEDColor.BLACK}))
       // .onFalse(new BlinkAlliance());
@@ -352,19 +359,16 @@ public class RobotContainer {
     // Operator DPad Left: Set Arm Rest Position
     new Trigger(() -> operatorController.getPOV() == 270)
       // .onTrue(new SetArmPosition(arm, 0.2, false, ArmConstants.REST));
-      .onTrue(new InstantCommand(() -> {arm.setArmGoalPosition(ArmPosition.START_NOTE);}));
+      .onTrue(new InstantCommand(() -> {arm.setArmGoalPosition(ArmPosition.PASSING);}));
 
     new Trigger(() -> operatorController.getYButton())
-        .onTrue(new ParallelCommandGroup(
-          new InstantCommand(() -> arm.setArmGoalPosition(ArmPosition.SPEAKER.getPosition() + 0.005)),
-          new RevShooter(shooter, 3000, 3000)
-        ))
-        .onFalse(new InstantCommand(() -> {
-          shooter.shooterSetOpenLoop(0, 0);
-        }, shooter));
+        .onTrue(new InstantCommand(() -> {arm.setArmGoalPosition(ArmPosition.WHATEVER);}));
 
     new Trigger(() -> operatorController.getLeftBumper())
-      .onTrue(new ArmViaLimelight(limelight, arm, 0));
+      .onTrue(new RevShooter(shooter,4500, 4500)) // 51 42
+      .onFalse(new InstantCommand(() -> {
+      shooter.shooterSetOpenLoop(0, 0);
+    }, shooter));
 
     new Trigger(() -> operatorController.getRightBumper())
       .onTrue(new ArmViaLimelight(limelight, arm, 1));
@@ -381,11 +385,17 @@ public class RobotContainer {
 
   private void configureAutoChooser() {
     autoChooser.setDefaultOption("Nothing", new WaitCommand(0));
-    autoChooser.addOption("Shoot from Subwoofer, grab note, shoot again", new DoubleNote(drive, shooter, intake, arm));
-    autoChooser.addOption("Double Side Shoot and Leave", new DoubleSideShootFromSubwoofer(drive, shooter, intake, arm));
-    autoChooser.addOption("MultiNote", new MultiNote(drive, shooter, intake, arm));
-    autoChooser.addOption("One Note Amp", new AmpSingleNote(drive, shooter, intake, arm));
-    autoChooser.addOption("Far Three Note", new FarThreeNote(drive, shooter, intake, arm));
+    // autoChooser.addOption("Shoot from Subwoofer, grab note, shoot again", new DoubleNote(drive, shooter, intake, arm));
+    autoChooser.addOption("Four Note Center", new MultiNoteLimelight(drive, shooter, intake, arm, limelight));
+    autoChooser.addOption("Amp Side Far", new AmpSingleNote(drive, shooter, intake, arm, limelight));
+    autoChooser.addOption("Double Side Close", new CloseDoubleSideNote(drive, shooter, intake, arm, limelight));
+    autoChooser.addOption("Double Side Far", new FarDoubleSideNote(drive, shooter, intake, arm, limelight));
+    autoChooser.addOption("Double Note Center", new DoubleNote(drive, shooter, intake, arm, limelight));
+    autoChooser.addOption("Amp No Motion", new AmpNoMotion(drive, shooter, intake, arm, limelight));
+    autoChooser.addOption("Shoot Side No Motion", new ShootSideNoMotion(drive, shooter, intake, arm, limelight));
+    autoChooser.addOption("Pizza Auto", new Pizza(drive, shooter, intake, arm, limelight));
+
+    // autoChooser.addOption("Test", new Test(drive, shooter, intake, arm, limelight));
     
     SmartDashboard.putData(autoChooser);
   }

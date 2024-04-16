@@ -157,6 +157,10 @@ public final class Limelight implements Subsystem {
         return 0.0;
     }
 
+    // public double getDistanceAssumingAngle(int id, double angle) {
+
+    // }
+
     private double[] getDistance(double[] ids) {
         int numTargets = numTargetsDetected(getJson());
         double[] distances = new double[numTargets];
@@ -169,6 +173,14 @@ public final class Limelight implements Subsystem {
             i++;
         }
         return distances;
+    }
+
+    public double getDistanceToCurrentAprilTag() {
+        return targetHeight(4) / (Math.tan(Math.toRadians(table.getEntry("ty").getDouble(0.0))));
+    }
+
+    public double getHorizontalAngleToCurrentAprilTag() {
+        return table.getEntry("tx").getDouble(0.0);
     }
 
     public double getDistanceOfPointBetween(double[] ids) {

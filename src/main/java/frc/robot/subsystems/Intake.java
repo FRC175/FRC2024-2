@@ -18,6 +18,7 @@ public class Intake implements Subsystem {
     private Intake() {
         intakeMotor = new CANSparkMax(IntakeConstants.INTAKE, CANSparkMaxLowLevel.MotorType.kBrushless);
         intakeMotor.setInverted(true);
+        // intakeMotor.setSmartCurrentLimit(80);
         intakeMotor.restoreFactoryDefaults();
         intakeMotorEncoder = intakeMotor.getEncoder(); 
         reflectometer = new DigitalInput(0);
@@ -37,6 +38,7 @@ public class Intake implements Subsystem {
         // System.out.println(isNotePresent());
         SmartDashboard.putBoolean("Pickup Sensor", isNotePresent());
         SmartDashboard.putBoolean("Electric Boogaloo", isNoteHeld());
+        System.out.println(intakeMotor.getOutputCurrent());
     }
 
     public void setOpenLoop(double demand) {
