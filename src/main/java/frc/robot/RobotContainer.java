@@ -34,10 +34,12 @@ import frc.robot.commands.ArmViaLimelight;
 import frc.robot.commands.Climb;
 import frc.robot.commands.DeployArm;
 import frc.robot.commands.SetArmPosition;
+import frc.robot.commands.UpdateToddlerMode;
 import frc.robot.commands.pickup;
 import frc.robot.commands.AutoModes.FarDoubleSideNote;
 import frc.robot.commands.AutoModes.MultiNote;
 import frc.robot.commands.AutoModes.MultiNoteLimelight;
+import frc.robot.commands.AutoModes.MultiNoteSkipAmp;
 import frc.robot.commands.AutoModes.Pizza;
 import frc.robot.commands.AutoModes.ShootSideNoMotion;
 import frc.robot.commands.AutoModes.Test;
@@ -188,7 +190,7 @@ public class RobotContainer {
     //   }
     // }, lift));
 
-    lift.setDefaultCommand(new Climb(lift, 1.0));
+    lift.setDefaultCommand(new Climb(lift, 1));
 
     // led.setDefaultCommand(new RunCommand(() -> {
     //   if (!intake.isNotePresent()) {
@@ -227,7 +229,7 @@ public class RobotContainer {
       // .onTrue(new SwerveToAngle(drive, shuffleboard, shuffleboard.limelight.getDistance(shuffleboard.limelight.getTargetIds(shuffleboard.limelight.getJson()))[0] - 0.267, 0.2))
       // .onTrue(new LimelightToDist(drive, limelight))
       // .onFalse(new Swerve(driverController, drive));
-      .whileTrue(new LockSwerve(driverController, drive, Utils.convToSideAngle(29)))
+      .whileTrue(new LockSwerve(driverController, drive, Utils.convToSideAngle(34)))
       .onFalse(new Swerve(driverController, drive));
 
     // new Trigger(() -> driverController.get6())
@@ -374,18 +376,18 @@ public class RobotContainer {
       .onTrue(new ArmViaLimelight(limelight, arm, 1));
 
     new Trigger(() -> operatorController.getRightStickButton())
-      .onTrue(new InstantCommand(() -> {lift.setLeftGoalPosition(LiftConstants.FINAL_POSITION_LEFT); lift.setRightGoalPosition(LiftConstants.FINAL_POSITION_RIGHT);}));
+      .onTrue(new InstantCommand(() -> {lift.setLeftGoalPosition(lift.getFINAL_POSITION_LEFT()); lift.setRightGoalPosition(lift.getFINAL_POSITION_RIGHT()); lift.setBreak(false);}));
 
     new Trigger(() -> operatorController.getLeftStickButton())
-      .onTrue(new InstantCommand(() -> {lift.setLeftGoalPosition(LiftConstants.STARTING_POSITION_LEFT); lift.setRightGoalPosition(LiftConstants.STARTING_POSITION_RIGHT);}));
+      .onTrue(new InstantCommand(() -> {lift.setLeftGoalPosition(lift.getSTARTING_POSITION_LEFT()); lift.setRightGoalPosition(lift.getSTARTING_POSITION_RIGHT()); lift.setBreak(false);}));
 
-    new Trigger(() -> operatorController.getBackButton())
-      .onTrue(new InstantCommand(() -> {lift.setLeftGoalPosition(LiftConstants.FINAL_POSITION_LEFT); lift.setRightGoalPosition(LiftConstants.FINAL_POSITION_RIGHT);}));
+    // new Trigger(() -> operatorController.getBackButton())
+    //   .onTrue(new InstantCommand(() -> {lift.setLeftGoalPosition(LiftConstants.FINAL_POSITION_LEFT); lift.setRightGoalPosition(LiftConstants.FINAL_POSITION_RIGHT);}));
   }
 
   private void configureAutoChooser() {
     autoChooser.setDefaultOption("Nothing", new WaitCommand(0));
-    // autoChooser.addOption("Shoot from Subwoofer, grab note, shoot again", new DoubleNote(drive, shooter, intake, arm));
+    // autoChooser.addOption("Shoot from Subwoofer, grab note, shoot again", new DoubleNote(drive, shooter, intake, arm, limelight));
     autoChooser.addOption("Four Note Center", new MultiNoteLimelight(drive, shooter, intake, arm, limelight));
     autoChooser.addOption("Amp Side Far", new AmpSingleNote(drive, shooter, intake, arm, limelight));
     autoChooser.addOption("Double Side Close", new CloseDoubleSideNote(drive, shooter, intake, arm, limelight));
@@ -394,6 +396,10 @@ public class RobotContainer {
     autoChooser.addOption("Amp No Motion", new AmpNoMotion(drive, shooter, intake, arm, limelight));
     autoChooser.addOption("Shoot Side No Motion", new ShootSideNoMotion(drive, shooter, intake, arm, limelight));
     autoChooser.addOption("Pizza Auto", new Pizza(drive, shooter, intake, arm, limelight));
+    autoChooser.addOption("Four Note Skip Amp", new MultiNoteSkipAmp(drive, shooter, intake, arm, limelight));
+
+    SmartDashboard.putData("Toddler Mode: 50%", new UpdateToddlerMode(0.5));
+    SmartDashboard.putData("Toddler Mode: 0%", new UpdateToddlerMode(0.0));
 
     // autoChooser.addOption("Test", new Test(drive, shooter, intake, arm, limelight));
     

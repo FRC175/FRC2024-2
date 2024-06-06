@@ -21,21 +21,39 @@ public class Lift implements Subsystem  {
 
     private final EncoderValue leftValue, rightValue;
     private double lastLeft, lastRight;
+    public boolean isBreak = true;
+    private double STARTING_POSITION_RIGHT;
+    private double STARTING_POSITION_LEFT;
+    private double FINAL_POSITION_RIGHT;
+    private double FINAL_POSITION_LEFT;
 
     private static Lift instance; 
 
     private Lift() {
+        leftEncoder = new DutyCycleEncoder(3);
+        rightEncoder = new DutyCycleEncoder(4);
+        
         leftLift = new CANSparkMax(LiftConstants.LEFT, CANSparkMaxLowLevel.MotorType.kBrushless);
         rightLift = new CANSparkMax(LiftConstants.RIGHT, CANSparkMaxLowLevel.MotorType.kBrushless);
 
-        leftEncoder = new DutyCycleEncoder(3);
-        rightEncoder = new DutyCycleEncoder(4);
+        try {
+            Thread.sleep(2000);
+        } catch (InterruptedException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
 
-        leftGoalPosition = LiftConstants.STARTING_POSITION_LEFT;
-        rightGoalPosition = LiftConstants.STARTING_POSITION_RIGHT;
+        
 
         leftValue = new EncoderValue(0, getLeftPosition());
         rightValue = new EncoderValue(0, getRightPosition());
+        
+        STARTING_POSITION_LEFT = 1.0-getLeftPosition();
+        STARTING_POSITION_RIGHT = getRightPosition();
+        leftGoalPosition = leftValue.getDouble();
+        rightGoalPosition = rightValue.getDouble();
+        FINAL_POSITION_LEFT = STARTING_POSITION_LEFT + 6.0; // 6.5
+        FINAL_POSITION_RIGHT = STARTING_POSITION_RIGHT + 6.4;
         lastLeft = getLeftPosition();
         lastRight = getRightPosition();
     }
@@ -54,6 +72,11 @@ public class Lift implements Subsystem  {
 
     public double getLeftValue() {
         return leftValue.getDouble();
+    }
+
+    public boolean setBreak(boolean isbreak) {
+        isBreak = isbreak;
+        return isBreak;
     }
 
     @Override
@@ -75,7 +98,6 @@ public class Lift implements Subsystem  {
 
         leftValue.setValue(1-getLeftPosition());
         rightValue.setValue(getRightPosition());
-
         SmartDashboard.putNumber("Left Value", leftValue.getDouble());
         SmartDashboard.putNumber("Right Value", rightValue.getDouble());
 
@@ -84,6 +106,24 @@ public class Lift implements Subsystem  {
 
         lastLeft = getLeftPosition();
         lastRight = getRightPosition();
+    }
+
+    
+
+    public double getSTARTING_POSITION_RIGHT() {
+        return STARTING_POSITION_RIGHT;
+    }
+
+    public double getSTARTING_POSITION_LEFT() {
+        return STARTING_POSITION_LEFT;
+    }
+
+    public double getFINAL_POSITION_RIGHT() {
+        return FINAL_POSITION_RIGHT;
+    }
+
+    public double getFINAL_POSITION_LEFT() {
+        return FINAL_POSITION_LEFT;
     }
 
     public void setLeftOpenLoop(double demand) {

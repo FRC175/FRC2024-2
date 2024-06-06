@@ -30,7 +30,7 @@ public class Climb extends Command {
         double leftGoalPosition = lift.getLeftGoalPosition();
         double rightGoalPosition = lift.getRightGoalPosition();
 
-        
+        if (!lift.isBreak) {
         if (lift.getLeftValue() > leftGoalPosition + LEFT_DEADBAND) {
 
             lift.setLeftOpenLoop(+speed);
@@ -47,6 +47,10 @@ public class Climb extends Command {
         } else {
             lift.setRightOpenLoop(calculateRightDeadbandSpeed(rightGoalPosition));
         }
+    } else {
+        lift.setLeftOpenLoop(0);
+        lift.setRightOpenLoop(0);
+    }
 
     }
 

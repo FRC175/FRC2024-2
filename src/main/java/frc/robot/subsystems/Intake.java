@@ -38,7 +38,7 @@ public class Intake implements Subsystem {
         // System.out.println(isNotePresent());
         SmartDashboard.putBoolean("Pickup Sensor", isNotePresent());
         SmartDashboard.putBoolean("Electric Boogaloo", isNoteHeld());
-        System.out.println(intakeMotor.getOutputCurrent());
+        // System.out.println(intakeMotor.getOutputCurrent());
     }
 
     public void setOpenLoop(double demand) {

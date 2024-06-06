@@ -40,7 +40,7 @@ public class FarDoubleSideNote extends SequentialCommandGroup{
                     new SwerveToDist(drive, 0.8, Utils.convToSideAngle(45), Utils.convToSideAngle(45), 3.90),
 
                     new DriveWhileIntaking(intake, drive, arm, 0.5, 5.0, Utils.convToSideAngle(5), Utils.convToSideAngle(10), 5),
-                    new SwerveToDist(drive, 0.6, Utils.convToSideAngle(200), Utils.convToSideAngle(25), 5.8),
+                    new SwerveToDist(drive, 0.6, Utils.convToSideAngle(200), Utils.convToSideAngle(25), 6.4),
                     // new SwerveToDist(drive, 0.4, Utils.convToSideAngle(200), Utils.convToSideAngle(30), 0.6),
 
                     new LockViaLimelight(drive, limelight, 2),

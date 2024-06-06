@@ -1,5 +1,6 @@
 package frc.robot.subsystems.Drive;
 
+import frc.robot.Constants;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.utils.Vector;
 
@@ -141,9 +142,10 @@ public final class Drive implements Subsystem {
         // System.out.println("BL: " + backLeft.getDriveDistance() + "\t\t" + backLeft.isReversed());
         // System.out.println("BR: " + backRight.getDriveDistance() + "\t\t" + backRight.isReversed());
 
-        SmartDashboard.putNumber("X Position: ", getPose().getX());
-        SmartDashboard.putNumber("Y Position: ", getPose().getY());
-        SmartDashboard.putNumber("Front Left Raw", frontLeft.getOdometryAngle());
+        // SmartDashboard.putNumber("X Position: ", getPose().getX());
+        // SmartDashboard.putNumber("Y Position: ", getPose().getY());
+        // SmartDashboard.putNumber("Front Left Raw", frontLeft.getOdometryAngle());
+        SmartDashboard.putNumber("Toddler Mode Level: ", Constants.TODDLER_MODE);
 
 
         // SmartDashboard.putNumber("Distance: ", frontLeft.getDriveDistance());

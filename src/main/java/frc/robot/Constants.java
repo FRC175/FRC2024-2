@@ -13,6 +13,9 @@ package frc.robot;
  * constants are needed, to reduce verbosity.
  */
 public final class Constants {
+
+    public static double TODDLER_MODE = 0.5;
+
     public static final class ControllerConstants {
         public static final int DRIVER_CONTROLLER_PORT = 0;
         public static final int OPERATOR_CONTROLLER_PORT = 1;
@@ -45,7 +48,7 @@ public final class Constants {
         public static final int backLeftEncoder = 24;
 
         public static final double frontRightBaseAngle = 0.318604;
-        public static final double frontLeftBaseAngle = 0.470215;
+        public static final double frontLeftBaseAngle = -0.101318; //0.470215
         public static final double backRightBaseAngle = 0.208740;
         public static final double backLeftBaseAngle = 0.599609;
 
@@ -68,12 +71,6 @@ public final class Constants {
     public static final class LiftConstants {
         public static final int LEFT = 16;
         public static final int RIGHT = 15; 
-        public static final double STARTING_POSITION_LEFT = 1-0.56;
-        public static final double STARTING_POSITION_RIGHT = 0.77;
-        public static final double MID_POSITION_RIGHT = 3.5;
-        public static final double MID_POSITION_LEFT = 3.5;
-        public static final double FINAL_POSITION_LEFT = 6.86;
-        public static final double FINAL_POSITION_RIGHT = 7.13;
     }
 
     public static final class ArmConstants {
